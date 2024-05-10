@@ -1,9 +1,18 @@
 package com.calc.service;
 
-public class CalServiceImpl implements CalService{
+public class CalServiceImpl extends CalService{
 
     @Override
-    public void abc() {
-        System.out.println("Executed implemented abc method");
+    public String getPinCode(String street) {
+
+        if(street.equals("Bhandup")){
+            return "400078";
+        }
+        else if(street.equals("Mulund")){
+            return "400076";
+        }
+        else{
+            return "00";
+        }
     }
 }

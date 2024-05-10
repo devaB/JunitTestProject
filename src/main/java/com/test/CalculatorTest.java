@@ -1,21 +1,29 @@
 package com.test;
 
 import com.cal.Calculator;
+import com.calc.service.CalService;
+import com.calc.service.CalServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
 import org.mockito.Mockito;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CalculatorTest {
 
     private static Calculator calc = null;
+    private static CalService calService = null;
 
     @BeforeAll
     public static void initTest(){
         calc = new Calculator();
+        calService = new CalServiceImpl();
     }
     @AfterAll
     public static void afterTest(){
@@ -91,14 +99,17 @@ public class CalculatorTest {
         assertEquals(true, true); //this is used to check if test result is matched or not
     }
 
-    /*@Test
+
+    @Test
     @AfterEach
+    @Disabled
     public void executeAfterEachTestCase(){
         System.out.println("execute After Each Test Case method executed");
-    }*/
+    }
 
     @Test
     @AfterAll
+    @Disabled
     public void executeAfterAllTestCase(){
         System.out.println("execute After All Test Case method executed");
     }
@@ -122,31 +133,40 @@ public class CalculatorTest {
 
     }
 
-    @Test
-    public void testVoidMethod(){
-        calc.voidMethod(3);
-        assertTrue(calc.isEnabledToExecute, ()->"after calling this method the value of isEnabledToExecute should be true");
-    }
-
-    @Test
-    public void test_how_many_times_method_is_called(){
-        calc.voidMethod(2);
-        calc.voidMethod(4);
-        calc.voidMethod(5);
-        Mockito.verify(calc, Mockito.times(1)).voidMethod(2);
-    }
-
-    /*
-        public void abc()
-        {
-        }
-        interface I
-        {
-            public void abc();
-        }
-    */
 
     //1. Test method with void return type
     //2. I want to test how many times this method is called
     //3. How to test an interface abstract method
+
+    @Test
+    public void testVoidMethod(){
+        calc.voidMethod(3);
+        assertEquals(calc.isEnabledToExecute, true, ()->"after calling this method the value of isEnabledToExecute should be true");
+    }
+
+    @Test
+    public void test_how_many_times_method_is_called(){
+        calc.count = 0;
+        calc.voidMethod(2);
+        calc.voidMethod(4);
+        calc.voidMethod(5);
+
+        assertAll(
+                ()->assertTrue(()->calc.count > 0?true:false, ()->"voidMethod called "+calc.count+" times"),
+                ()->assertEquals(calc.count, 3)
+        );
+    }
+
+    @Test
+    public void test_AbstractClass(){
+
+        String countryCode = calService.getCountryCode("India");
+        String pinCode = calService.getPinCode("Bhandup");
+
+        assertAll(
+                ()->assertEquals(countryCode, "+91"),
+                ()->assertEquals(pinCode, "400078")
+        );
+    }
+
 }
